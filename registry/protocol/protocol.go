@@ -337,9 +337,18 @@ func getRegistryUrl(invoker protocol.Invoker) *common.URL {
 }
 
 func getProviderUrl(invoker protocol.Invoker) *common.URL {
+
 	url := invoker.GetUrl()
 	//be careful params maps in url is map type
-	return url.SubURL.Clone()
+	cloneURL := url.SubURL.Clone()
+	removeSet := gxset.NewSet()
+	for k, _ := range cloneURL.GetParams() {
+		if strings.HasPrefix(k, ".") {
+			removeSet.Add(k)
+		}
+	}
+	cloneURL.RemoveParams(removeSet)
+	return cloneURL
 }
 
 func setProviderUrl(regURL *common.URL, providerURL *common.URL) {
